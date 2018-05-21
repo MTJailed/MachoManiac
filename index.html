@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="author" content="Sem Voigtlander">
+	<meta name="keywords" content="Mach-O, macho parser, online macho parser">
+	<meta name="description" content="Live online Mach-O parser written in vanilla OOP javascript and supports multiarchitectures.">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Mach-O Maniac</title>
+	<!--
+		Mach-O Maniac
+		Written by Sem Voigtländer
+		Licensed under the MIT License
+
+		Mach-O Maniac is a pure javascript solution for parsing Mach-O files.
+		Mach-O is the format known to be used on macOS and iOS platforms.
+		Mach-O files contain enough information about the file and therefore analysis of the file can be done.
+		Javascript is not the most efficient way of parsing Mach-O files but in use-cases of post browser exploitation this Mach-O parser can be used as a loader for binary files.
+		This program is able to construct and detect various Mach-O structures such as the header and the commands.
+		Files can be altered using this program by making use of the static methods in memory.js for writing integers.
+		An implementation of sizeof for javascript objects was taken and improved by me, but may lose precision depending on how it is used.
+		Files are parsed into the memory of the browser so huge files will need to be split before parsing them with this logic.
+		Scripts and stylesheets can be included in a modular way by making use of includejs, written by me.
+		A design recommendation for writing extensions to this program is that all classes and objects should have a toString override returing the object and it's property values in JSON.
+		I encourage any javascript programmer to write javascript like I do in a modular, JSON debuggable, object oriented way.
+		Currently a free function exists in memory.js which destroys objects assigned as property to the window object almost immediately by setting them equal to undefined.
+		Javascript has dynamically managed memory so when destroying arrays using my free logic, all indices of the array should be set to undefined first before calling free on the array.
+		Modular includes are automatically printed out while they are loaded.
+
+		Feel free to contact me at s.voigtlander@jailed.ml for questions.
+	-->
+	<script type="text/javascript" src="include.js"></script>
+	<script type="text/javascript">
+		window.onload = function() {
+			using('jquery-blob.js');
+			using('mimetypes.js');
+			using('memory.js');
+			using('macho.constants.js');
+			using('macho.magic.js');
+			using('macho.header.js');
+			using('macho.cstr.js');
+			using('macho.loadcommand.js');
+			using('macho.segment.js');
+			using('macho.cpu.js');
+			using('macho.file.js');
+			using('macho.js');
+			using('theme.black.css');
+		};
+	</script>
+<body>
+	<div id='menu'>
+		<label class='binary'>
+		Load binary
+			<input type="file" name="binary" id="file_to_load" onchange="new MachoParser(this.files[0], document.getElementById('callback'));"/> 
+		</label>
+		&nbsp;<input type="button" name="save" id="save" onclick="save_to_file('machomaniac'+new Date().getTime('his')+'.bin');free('window.tempFile');" value="Save patched executable">
+		&nbsp;<input type="button" name="save" id="save" onclick="document.getElementById('menu').style='display:none;'; print(); document.getElementById('menu').style='display:inline;';"/ value="Save PDF">
+		<br>
+		<br/>
+				A Mach-O Analytic tool written in vanilla javascript.<br/>
+				Created by Sem Voigtlander. Licensed under the MIT License.<br/>
+				<br/>
+	</div>
+	<table id="callback" class="callback">
+	</table>
+	<br>
+</body>
+</html>
